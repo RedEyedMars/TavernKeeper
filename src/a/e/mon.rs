@@ -1,9 +1,8 @@
 use super::spell::{
-    Ability, Effect, EffectApplication, EffectDuration, PriorityType, Spell, Spells, Status,
-    TargetType,
+    Spell, Status,
 };
 use super::wiz::{Acceptance, Affinity};
-use super::{Glyph, Style};
+use super::{Style};
 use crate::generational_arena::Index;
 use lazy_static::lazy_static;
 use map_macro::hash_map;
@@ -118,7 +117,7 @@ lazy_static! {
 
 impl MonsterType {
     pub fn ability_with_style(monster_type: MonsterType, style: Style) -> Vec<Spell> {
-        let mut abilities = Abilities::BY_TYPE.get(&monster_type).unwrap().clone();
+        let mut abilities = abilities::BY_TYPE.get(&monster_type).unwrap().clone();
         abilities.iter_mut().for_each(|spell| {
             spell.style = (style.clone(), spell.style.1);
         });
@@ -162,11 +161,11 @@ impl MonsterType {
         }
     }
 }
-pub mod Abilities {
+pub mod abilities {
     use crate::a::e::spell::{EffectProgression, PriorityTypes};
 
     use super::super::spell::{
-        Ability, Effect, EffectApplication, EffectDuration, PriorityType, Spell, Spells, Status,
+        Ability, Effect, EffectApplication, EffectDuration, PriorityType, Spell, spells, Status,
         TargetType,
     };
     use super::super::{Glyph, Style};
@@ -421,7 +420,7 @@ pub mod Abilities {
         },
     ];
 
-    pub const DEMON: [Spell; 2] = [Spells::Fire::FIREBALL, Spells::Fire::FIRESTORM];
+    pub const DEMON: [Spell; 2] = [spells::fire::FIREBALL, spells::fire::FIRESTORM];
 
     pub const DRAGON: [Spell; 2] = [
         Spell {
@@ -660,10 +659,10 @@ pub mod Abilities {
     ];
 
     pub const ELEMENTAL: [Spell; 4] = [
-        Spells::Fire::FIREBALL,
-        Spells::Water::SUBMERGE,
-        Spells::Earth::EARTHQUAKE,
-        Spells::Air::LIGHTNING,
+        spells::fire::FIREBALL,
+        spells::water::SUBMERGE,
+        spells::earth::EARTHQUAKE,
+        spells::air::LIGHTNING,
     ];
 
     pub const GUARDIAN: [Spell; 2] = [
@@ -845,7 +844,7 @@ pub mod Abilities {
     ];
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct Monster {
     pub id: Option<Index>,
     pub name: String,
@@ -853,4 +852,14 @@ pub struct Monster {
     pub affinity: Affinity,
     pub acceptance: Acceptance,
     pub health: u32,
+    pub max_health: u32,
+    pub status: Vec<Status>,
 }
+
+impl PartialEq for Monster {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for Monster {}

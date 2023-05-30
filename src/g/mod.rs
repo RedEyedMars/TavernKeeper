@@ -43,7 +43,7 @@ pub mod animation;
 pub mod render_gl;
 pub mod resources;
 
-pub fn setup() -> Result<(Sdl, Window, GLContext), failure::Error> {
+pub fn setup(name: &'static str) -> Result<(Sdl, Window, GLContext), failure::Error> {
     let sdl = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl.video().map_err(err_msg)?;
 
@@ -53,7 +53,7 @@ pub fn setup() -> Result<(Sdl, Window, GLContext), failure::Error> {
     gl_attr.set_context_version(4, 1);
 
     let window = video_subsystem
-        .window("Game", 900, 700)
+        .window(name, 900, 700)
         .opengl()
         .resizable()
         .build()?;

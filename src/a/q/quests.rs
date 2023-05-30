@@ -1,11 +1,11 @@
 use rand::Rng;
 
 use super::items::{Amulets, Books, Misc, Potions, Rings, Scrolls, Tools};
-use super::{Item, ItemType, Objective, Quest, Reward};
+use super::{ItemType, Objective, Quest, Reward};
 use crate::a::e::mon::MonsterType;
-use crate::a::e::spell::{Spell, Spells};
+use crate::a::e::spell::{Spell, spells};
 use crate::a::e::spell_book::SpellBook;
-use crate::a::e::wiz::{Acceptance, Affinity, Wizard};
+use crate::a::e::wiz::{Acceptance, Wizard};
 use crate::a::e::{Glyph, Style};
 
 impl Quest {
@@ -40,7 +40,7 @@ impl Quest {
     fn generate_objectives(acceptance: &Acceptance) -> Vec<Objective> {
         let mut objectives = Vec::new();
         let mut rng = rand::thread_rng();
-        let mut count = rng.gen_range(1, 4);
+        let count = rng.gen_range(1, 4);
         for _ in 0..count {
             let objective = match rng.gen_range(0, 3) {
                 0 => Objective::Find {
@@ -72,7 +72,7 @@ impl Quest {
         crate::a::e::mon::ALL[rng.gen_range(0, crate::a::e::mon::ALL.len())].clone()
     }
 
-    fn generate_item(acceptance: &Acceptance) -> ItemType {
+    fn generate_item(_acceptance: &Acceptance) -> ItemType {
         let mut rng = rand::thread_rng();
         match rng.gen_range(0, 7) {
             0 => ItemType::Ring(Rings::ALL[rng.gen_range(0, 5)].clone()),
@@ -86,7 +86,7 @@ impl Quest {
     }
 
     fn generate_wizard(acceptance: &Acceptance) -> Wizard {
-        let mut rng = rand::thread_rng();
+        let _rng = rand::thread_rng();
         let mut wizard = Wizard::new(Self::generate_wizard_name());
         Self::generate_affinity(&mut wizard);
         Self::generate_acceptance(&mut wizard, acceptance);
@@ -96,7 +96,7 @@ impl Quest {
     fn generate_wizard_name() -> String {
         let mut rng = rand::thread_rng();
         let mut name = String::new();
-        let mut count = rng.gen_range(1, 3);
+        let count = rng.gen_range(1, 3);
         for _ in 0..count {
             name.push_str(Synonym::for_first_name());
             name.push_str(" ");
@@ -109,7 +109,7 @@ impl Quest {
 
     fn generate_affinity(wizard: &mut Wizard) {
         let mut rng = rand::thread_rng();
-        for i in 0..rng.gen_range(5, 10) {
+        for _i in 0..rng.gen_range(5, 10) {
             match rng.gen_range(0, 5) {
                 0 => wizard.affinity.fire += 1,
                 1 => wizard.affinity.air += 1,
@@ -122,7 +122,7 @@ impl Quest {
 
     fn generate_acceptance(wizard: &mut Wizard, acceptance: &Acceptance) {
         let mut rng = rand::thread_rng();
-        for i in 0..rng.gen_range(0, 2) {
+        for _i in 0..rng.gen_range(0, 2) {
             match rng.gen_range(0, 5) {
                 0 => wizard.acceptance.elder += 1,
                 1 => wizard.acceptance.eldrich += 1,
@@ -146,7 +146,7 @@ impl Quest {
                     num_of_rewards -= 1;
                 }
                 Objective::Free { .. } => num_of_rewards += 2,
-                Objective::Kill { count, kind } => num_of_rewards += kind.difficulty() as u32,
+                Objective::Kill { count: _, kind } => num_of_rewards += kind.difficulty() as u32,
             }
         }
         for _ in 0..num_of_rewards {
@@ -173,11 +173,11 @@ impl Quest {
 
     fn generate_spell(acceptance: &Acceptance) -> Spell {
         let mut rng = rand::thread_rng();
-        let choices = &Spells::BY_STYLE[acceptance.get_highest()];
+        let choices = &spells::BY_STYLE[acceptance.get_highest()];
         choices[rng.gen_range(0, choices.len())].clone()
     }
 
-    fn generate_glyph(acceptance: &Acceptance) -> Glyph {
+    fn generate_glyph(_acceptance: &Acceptance) -> Glyph {
         let mut rng = rand::thread_rng();
         match rng.gen_range(0, 5) {
             0 => Glyph::Fire,
@@ -193,37 +193,37 @@ pub mod Synonym {
     use rand::Rng;
     pub fn for_quest() -> String {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, QUESTS.len());
+        let index = rng.gen_range(0, QUESTS.len());
         QUESTS[index].to_string()
     }
 
     pub fn for_of_the() -> &'static str {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, OF_THE.len());
+        let index = rng.gen_range(0, OF_THE.len());
         OF_THE[index]
     }
 
     pub fn for_adjective() -> &'static str {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, ADJECTIVES.len());
+        let index = rng.gen_range(0, ADJECTIVES.len());
         ADJECTIVES[index]
     }
 
     pub fn for_noun() -> &'static str {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, NOUNS.len());
+        let index = rng.gen_range(0, NOUNS.len());
         NOUNS[index]
     }
 
     pub fn for_first_name() -> &'static str {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, FIRST_NAME.len());
+        let index = rng.gen_range(0, FIRST_NAME.len());
         FIRST_NAME[index]
     }
 
     pub fn for_last_name() -> &'static str {
         let mut rng = rand::thread_rng();
-        let mut index = rng.gen_range(0, LAST_NAME.len());
+        let index = rng.gen_range(0, LAST_NAME.len());
         LAST_NAME[index]
     }
 

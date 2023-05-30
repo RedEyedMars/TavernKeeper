@@ -1,4 +1,4 @@
-use failure::err_msg;
+
 
 pub mod e;
 mod input;
@@ -8,7 +8,7 @@ pub mod realms;
 use crate::g::render_gl::Viewport;
 use crate::g::resources::Resources;
 use sdl2::EventPump;
-use sdl2::Sdl;
+
 use std::time::Instant;
 
 pub struct GameState {
@@ -19,7 +19,7 @@ pub struct GameState {
 }
 
 pub fn setup() -> Result<GameState, failure::Error> {
-    let mut res = Resources::from_relative_exe_path("assets").unwrap();
+    let res = Resources::from_relative_exe_path("assets").unwrap();
 
     let viewport = Viewport::for_window(900, 700);
     Ok(GameState {
@@ -47,11 +47,11 @@ impl GameState {
         Ok(())
     }
 
-    pub fn render(&self, game: &GameState) -> Result<(), failure::Error> {
+    pub fn render(&self, _game: &GameState) -> Result<(), failure::Error> {
         Ok(())
     }
 
-    pub fn md(&mut self, x: f32, y: f32) -> Result<(), failure::Error> {
+    pub fn md(&mut self, _x: f32, _y: f32) -> Result<(), failure::Error> {
         Ok(())
     }
 

@@ -3,6 +3,7 @@ use generational_arena::Index;
 
 use super::Glyph;
 use super::Style;
+use super::spell::Status;
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug)]
 pub enum MindSet {
@@ -35,6 +36,9 @@ pub struct Acceptance {
 pub struct Wizard {
     pub id: Option<Index>,
     pub name: String,
+    pub hp: u32,
+    pub max_hp: u32,
+    pub status: Vec<Status>,
     selected_spellbook: usize,
     spellbooks: Vec<SpellBook>,
     pub state: MindSet,
@@ -47,6 +51,9 @@ impl Wizard {
         Wizard {
             id: None,
             name,
+            hp: 100,
+            max_hp: 100,
+            status: vec![],
             selected_spellbook: 0,
             spellbooks: vec![SpellBook::new()],
             state: MindSet::Neutral,

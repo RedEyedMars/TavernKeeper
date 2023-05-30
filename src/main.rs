@@ -43,7 +43,7 @@ pub fn main() -> Result<(), failure::Error> {
         Err(err) => println!("{:?}", err),
         _ => {}
     }
-    let (sdl, mut window, _gl_context) = g::setup()?;
+    let (sdl, mut window, _gl_context) = g::setup("Tavern Keeper v0.1.0")?;
     let mut game = a::setup()?;
     let mut event_pump = sdl.event_pump().expect("Could not get sdl event pump");
     loop {

@@ -76,7 +76,7 @@ impl EffectApplication {
                     }
                 }
             },
-            EffectApplication::Status(status, duration) => match target {
+            EffectApplication::Status(_status, _duration) => match target {
                 Status::Barrier(_) => {
                     if value > 0 {
                         *target = Status::Barrier(Glyph::Void);
@@ -88,7 +88,7 @@ impl EffectApplication {
                     }
                 }
             },
-            EffectApplication::RemoveStatus(status) => match target {
+            EffectApplication::RemoveStatus(_status) => match target {
                 Status::Barrier(_) => {
                     if value > 0 {
                         *target = Status::Barrier(Glyph::Void);
@@ -206,7 +206,7 @@ impl Spell {
     }
 }
 
-pub mod Spells {
+pub mod spells {
 
     use super::{Glyph, Spell, Style};
     use lazy_static::lazy_static;
@@ -218,41 +218,41 @@ pub mod Spells {
             spells.insert(
                 Glyph::Fire,
                 vec![
-                    Fire::FIREBALL,
-                    Fire::RAGE,
-                    Fire::BURN,
-                    Fire::FLAME_WALL,
-                    Fire::FLAME_BLAST,
-                    Fire::FIRESTORM,
+                    fire::FIREBALL,
+                    fire::RAGE,
+                    fire::BURN,
+                    fire::FLAME_WALL,
+                    fire::FLAME_BLAST,
+                    fire::FIRESTORM,
                 ],
             );
             spells.insert(
                 Glyph::Water,
-                vec![Water::HEAL, Water::FLUID, Water::SUBMERGE],
+                vec![water::HEAL, water::FLUID, water::SUBMERGE],
             );
             spells.insert(
                 Glyph::Earth,
                 vec![
-                    Earth::EARTH_BARRIER,
-                    Earth::STUN,
-                    Earth::HARDEN,
-                    Earth::EARTHQUAKE,
+                    earth::EARTH_BARRIER,
+                    earth::STUN,
+                    earth::HARDEN,
+                    earth::EARTHQUAKE,
                 ],
             );
-            spells.insert(Glyph::Air, vec![Air::FLY, Air::LIGHTNING, Air::SHOCK]);
+            spells.insert(Glyph::Air, vec![air::FLY, air::LIGHTNING, air::SHOCK]);
             spells.insert(
                 Glyph::Void,
-                vec![Void::UNENDING_HUNGER, Void::MAGIC_MISSILE],
+                vec![void::UNENDING_HUNGER, void::MAGIC_MISSILE],
             );
             spells
         };
         pub static ref BY_GLYPH_AND_STYLE: HashMap<Glyph, HashMap<Style, Vec<Spell>>> = {
             let mut spells = HashMap::with_capacity(5);
-            spells.insert(Glyph::Fire, Fire::BY_STYLE.clone());
-            spells.insert(Glyph::Water, Water::BY_STYLE.clone());
-            spells.insert(Glyph::Earth, Earth::BY_STYLE.clone());
-            spells.insert(Glyph::Air, Air::BY_STYLE.clone());
-            spells.insert(Glyph::Void, Void::BY_STYLE.clone());
+            spells.insert(Glyph::Fire, fire::BY_STYLE.clone());
+            spells.insert(Glyph::Water, water::BY_STYLE.clone());
+            spells.insert(Glyph::Earth, earth::BY_STYLE.clone());
+            spells.insert(Glyph::Air, air::BY_STYLE.clone());
+            spells.insert(Glyph::Void, void::BY_STYLE.clone());
             spells
         };
         pub static ref BY_STYLE: HashMap<Style, Vec<Spell>> = {
@@ -260,36 +260,36 @@ pub mod Spells {
             spells.insert(
                 Style::Elder,
                 vec![
-                    Fire::BURN,
-                    Fire::FLAME_BLAST,
-                    Water::HEAL,
-                    Earth::EARTH_BARRIER,
-                    Air::FLY,
+                    fire::BURN,
+                    fire::FLAME_BLAST,
+                    water::HEAL,
+                    earth::EARTH_BARRIER,
+                    air::FLY,
                 ],
             );
-            spells.insert(Style::Arcane, vec![Fire::FIREBALL, Air::LIGHTNING]);
+            spells.insert(Style::Arcane, vec![fire::FIREBALL, air::LIGHTNING]);
             spells.insert(
                 Style::Ancient,
-                vec![Fire::FLAME_WALL, Water::HEAL, Earth::HARDEN],
+                vec![fire::FLAME_WALL, water::HEAL, earth::HARDEN],
             );
             spells.insert(
                 Style::Eldrich,
                 vec![
-                    Fire::RAGE,
-                    Fire::FIRESTORM,
-                    Water::SUBMERGE,
-                    Earth::EARTHQUAKE,
+                    fire::RAGE,
+                    fire::FIRESTORM,
+                    water::SUBMERGE,
+                    earth::EARTHQUAKE,
                 ],
             );
             spells.insert(
                 Style::Void,
-                vec![Void::UNENDING_HUNGER, Void::MAGIC_MISSILE],
+                vec![void::UNENDING_HUNGER, void::MAGIC_MISSILE],
             );
             spells
         };
     }
 
-    pub mod Fire {
+    pub mod fire {
         use crate::a::e::spell::{Effect, EffectApplication, EffectDuration};
 
         use super::super::{
@@ -302,12 +302,12 @@ pub mod Spells {
         lazy_static! {
             pub static ref BY_NAME: HashMap<&'static str, Spell> = {
                 let mut spells = HashMap::with_capacity(6);
-                spells.insert("Fireball", FIREBALL);
+                spells.insert("fireball", FIREBALL);
                 spells.insert("Rage", RAGE);
                 spells.insert("Burn", BURN);
                 spells.insert("Flame wall", FLAME_WALL);
                 spells.insert("Flame blast", FLAME_BLAST);
-                spells.insert("Firestorm", FIRESTORM);
+                spells.insert("firestorm", FIRESTORM);
                 spells
             };
             pub static ref BY_STYLE: HashMap<Style, Vec<Spell>> = {
@@ -321,7 +321,7 @@ pub mod Spells {
         }
 
         pub const FIREBALL: Spell = Spell::new(
-            "Fireball",
+            "fireball",
             (Glyph::Fire, 1),
             (Style::Arcane, 1),
             Ability::duo(
@@ -414,7 +414,7 @@ pub mod Spells {
         );
 
         pub const FIRESTORM: Spell = Spell::new(
-            "Firestorm",
+            "firestorm",
             (Glyph::Fire, 3),
             (Style::Eldrich, 1),
             Ability::duo(
@@ -434,8 +434,7 @@ pub mod Spells {
         );
     }
 
-    pub mod Water {
-        use crate::a::e::spell::EffectProgression;
+    pub mod water {
 
         use super::super::{
             Ability, Effect, EffectApplication, EffectDuration, Glyph, PriorityType, Spell, Status,
@@ -512,8 +511,7 @@ pub mod Spells {
         );
     }
 
-    pub mod Earth {
-        use crate::a::e::spell::EffectProgression;
+    pub mod earth {
 
         use super::super::{
             Ability, Effect, EffectApplication, EffectDuration, Glyph, PriorityType, Spell, Status,
@@ -525,10 +523,10 @@ pub mod Spells {
         lazy_static! {
             pub static ref BY_NAME: HashMap<&'static str, Spell> = {
                 let mut spells = HashMap::with_capacity(5);
-                spells.insert("Earth barrier", EARTH_BARRIER);
+                spells.insert("earth barrier", EARTH_BARRIER);
                 spells.insert("Stun", STUN);
                 spells.insert("Harden", HARDEN);
-                spells.insert("Earthquake", EARTHQUAKE);
+                spells.insert("earthquake", EARTHQUAKE);
                 spells
             };
             pub static ref BY_STYLE: HashMap<Style, Vec<Spell>> = {
@@ -541,7 +539,7 @@ pub mod Spells {
         }
 
         pub const EARTHQUAKE: Spell = Spell::new(
-            "Earthquake",
+            "earthquake",
             (Glyph::Earth, 3),
             (Style::Eldrich, 1),
             Ability::duo(
@@ -561,7 +559,7 @@ pub mod Spells {
         );
 
         pub const EARTH_BARRIER: Spell = Spell::new(
-            "Earth barrier",
+            "earth barrier",
             (Glyph::Earth, 1),
             (Style::Elder, 1),
             Ability::duo(
@@ -616,8 +614,8 @@ pub mod Spells {
         );
     }
 
-    pub mod Air {
-        use crate::a::e::spell::{EffectApplication, EffectProgression};
+    pub mod air {
+        use crate::a::e::spell::EffectApplication;
 
         use super::super::{
             Ability, Effect, EffectDuration, Glyph, PriorityType, Spell, Status, Style, TargetType,
@@ -693,8 +691,8 @@ pub mod Spells {
         );
     }
 
-    pub mod Void {
-        use crate::a::e::spell::{Effect, EffectApplication, EffectDuration, EffectProgression};
+    pub mod void {
+        use crate::a::e::spell::{Effect, EffectApplication, EffectDuration};
 
         use super::super::{Ability, Glyph, PriorityType, Spell, Status, Style, TargetType};
         use lazy_static::lazy_static;

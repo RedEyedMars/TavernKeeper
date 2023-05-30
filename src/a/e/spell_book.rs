@@ -1,8 +1,8 @@
 use super::spell::Spell;
 use super::wiz::{Acceptance, Affinity};
-use super::{Glyph, Style};
+
 use crate::generational_arena::Index;
-use std::collections::HashMap;
+
 
 #[derive(Clone, Debug)]
 pub struct SpellBook {
