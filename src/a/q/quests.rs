@@ -1,14 +1,75 @@
+use generational_arena::{Arena, Index};
 use rand::Rng;
 
-use super::items::{Amulets, Books, Misc, Potions, Rings, Scrolls, Tools};
+use super::battle::Battle;
+use super::items::{amulets, books, misc, potions, rings, scrolls, tools};
 use super::{ItemType, Objective, Quest, Reward};
-use crate::a::e::mon::MonsterType;
+use crate::a::e::col::Colosseum;
+use crate::a::e::mon::{Monster, MonsterType};
+use crate::a::e::party::Party;
 use crate::a::e::spell::{Spell, spells};
 use crate::a::e::spell_book::SpellBook;
 use crate::a::e::wiz::{Acceptance, Wizard};
 use crate::a::e::{Glyph, Style};
 
 impl Quest {
+    pub fn is_complete(&self) -> bool {
+        self.is_complete.clone()
+    }
+
+    pub fn is_battle(&self) -> bool {
+        for objective in &self.objectives {
+            match objective {
+                Objective::Kill { kind: _, count: _ } => {
+                    return true;
+                }
+                Objective::Find { item: _ } => {
+                    return false;
+                }
+                Objective::Free { wizard: _ } => {
+                    return false;
+                }
+            }
+        }
+        false
+    }
+
+    pub fn monsters(&self, col: &mut Colosseum) -> Vec<Index> {
+        use crate::a::e::col::ColosseumArena;
+        let mut monsters = Vec::new();
+        for objective in &self.objectives {
+            match objective {
+                Objective::Kill { kind, count } => {
+                    for _ in 0..*count {
+                        let mon_id = col.insert(Monster::new(Synonym::for_first_name(), kind, 1));
+                        monsters.push(mon_id);
+                    }
+                }
+                _ => {}
+            }
+        }
+        monsters
+    }
+
+    pub fn win_battle(&mut self, wizards: &mut Arena<Wizard>, monsters: &mut Arena<Monster>, party: &mut Party, battle: &Battle) {
+        for enemy in battle.enemies.iter() {
+            monsters.remove(*enemy);            
+        }
+        //let hashset = battle.allies.into_iter().filter(|i| !battle.active_allies.contains(i) && wizards.remove(*i).is_some()).collect::<HashSet<Index>>();
+        //party.members.retain(|i| !hashset.contains(i));
+        self.is_complete = true;
+    }
+
+    pub fn lose_battle(&mut self, wizards: &mut Arena<Wizard>, monsters: &mut Arena<Monster>, party: &mut Party, battle: &Battle) {
+        for enemy in battle.enemies.iter() {
+            monsters.remove(*enemy);            
+        }
+        //let hashset = battle.allies.into_iter().filter(|i| !battle.active_allies.contains(i) && wizards.remove(*i).is_some()).collect::<HashSet<Index>>();
+        //party.members.retain(|i| !hashset.contains(i));
+        self.is_complete = true;
+    }
+
+
     pub fn generate() -> Quest {
         let mut rng = rand::thread_rng();
         let acceptance = Acceptance::from_style(
@@ -27,6 +88,7 @@ impl Quest {
             name: Self::generate_name(),
             rewards: Self::generate_rewards(&objectives, &acceptance),
             objectives,
+            is_complete: false,
         }
     }
 
@@ -75,13 +137,13 @@ impl Quest {
     fn generate_item(_acceptance: &Acceptance) -> ItemType {
         let mut rng = rand::thread_rng();
         match rng.gen_range(0, 7) {
-            0 => ItemType::Ring(Rings::ALL[rng.gen_range(0, 5)].clone()),
-            1 => ItemType::Amulet(Amulets::ALL[rng.gen_range(0, 5)].clone()),
-            2 => ItemType::Scroll(Scrolls::ALL[rng.gen_range(0, 5)].clone()),
-            3 => ItemType::Potion(Potions::ALL[rng.gen_range(0, 5)].clone()),
-            4 => ItemType::Book(Books::ALL[rng.gen_range(0, 20)].clone()),
-            5 => ItemType::Tool(Tools::ALL[rng.gen_range(0, 5)].clone()),
-            _ => ItemType::Misc(Misc::ALL[rng.gen_range(0, 5)].clone()),
+            0 => ItemType::Ring(rings::ALL[rng.gen_range(0, 5)].clone()),
+            1 => ItemType::Amulet(amulets::ALL[rng.gen_range(0, 5)].clone()),
+            2 => ItemType::Scroll(scrolls::ALL[rng.gen_range(0, 5)].clone()),
+            3 => ItemType::Potion(potions::ALL[rng.gen_range(0, 5)].clone()),
+            4 => ItemType::Book(books::ALL[rng.gen_range(0, 20)].clone()),
+            5 => ItemType::Tool(tools::ALL[rng.gen_range(0, 5)].clone()),
+            _ => ItemType::Misc(misc::ALL[rng.gen_range(0, 5)].clone()),
         }
     }
 

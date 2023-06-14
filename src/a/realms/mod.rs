@@ -1,25 +1,33 @@
-use super::{e::mon::Monster, q::Quest};
+pub mod adventures;
 
-pub struct Adventure {
-    pub name: String,
-    pub quest: Quest,
-    pub monster: Monster,
-    pub location: Realm,
-}
+use adventures::Adventure;
 
-impl Adventure {
-    pub fn new(name: String, quest: Quest, monster: Monster, location: Realm) -> Adventure {
-        Adventure {
-            name,
-            quest,
-            monster,
-            location,
-        }
-    }
+use super::e::wiz::{Affinity, Acceptance};
+
+pub enum RealmLocation {
+    City {
+        name: String,
+        description: String,
+        difficulty: u8,
+    },
+    Dungeon {
+        name: String,
+        description: String,
+        difficulty: u8,
+    },
+    Wilderness {
+        name: String,
+        description: String,
+        difficulty: u8,
+    },
 }
 
 pub struct Realm {
     pub name: String,
     pub description: String,
+    pub locations: Vec<RealmLocation>,
+    pub location_links: Vec<(usize, usize)>,
     pub adventures: Vec<Adventure>,
+    pub affinity: Affinity,
+    pub acceptance: Acceptance,
 }

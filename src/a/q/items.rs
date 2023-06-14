@@ -25,7 +25,7 @@ impl Item {
     }
 }
 
-pub mod Rings {
+pub mod rings {
     use super::{Glyph, Item, ItemAbility};
 
     pub const RING_OF_FIRE: Item = Item::new(
@@ -68,7 +68,7 @@ pub mod Rings {
     ];
 }
 
-pub mod Amulets {
+pub mod amulets {
     use super::{Glyph, Item, ItemAbility};
 
     pub const AMULET_OF_FIRE: Item = Item::new(
@@ -111,7 +111,7 @@ pub mod Amulets {
     ];
 }
 
-pub mod Scrolls {
+pub mod scrolls {
     use super::{Glyph, Item, ItemAbility};
 
     pub const SCROLL_OF_FIRE: Item = Item::new(
@@ -154,7 +154,7 @@ pub mod Scrolls {
     ];
 }
 
-pub mod Potions {
+pub mod potions {
     use super::{Glyph, Item, ItemAbility};
 
     pub const POTION_OF_FIRE: Item = Item::new(
@@ -197,7 +197,7 @@ pub mod Potions {
     ];
 }
 
-pub mod Books {
+pub mod books {
     use super::{Glyph, Item, ItemAbility, Style};
     use std::collections::HashMap;
 
@@ -381,7 +381,7 @@ pub mod Books {
     }
 }
 
-pub mod Tools {
+pub mod tools {
     use super::{Glyph, Item, ItemAbility};
 
     pub const TOOL_OF_FIRE: Item = Item::new(
@@ -424,7 +424,7 @@ pub mod Tools {
     ];
 }
 
-pub mod Misc {
+pub mod misc {
     use super::{Glyph, Item, ItemAbility};
 
     pub const MISC_OF_FIRE: Item = Item::new(

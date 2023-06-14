@@ -1,8 +1,6 @@
-use super::spell::{
-    Spell, Status,
-};
-use super::wiz::{Acceptance, Affinity};
-use super::{Style};
+use super::spell::Spell;
+use super::wiz::{Acceptance, Affinity, StatusSet};
+use super::{Style, Glyph};
 use crate::generational_arena::Index;
 use lazy_static::lazy_static;
 use map_macro::hash_map;
@@ -116,7 +114,7 @@ lazy_static! {
 }
 
 impl MonsterType {
-    pub fn ability_with_style(monster_type: MonsterType, style: Style) -> Vec<Spell> {
+    pub fn ability_with_style(monster_type: MonsterType, style: &Style) -> Vec<Spell> {
         let mut abilities = abilities::BY_TYPE.get(&monster_type).unwrap().clone();
         abilities.iter_mut().for_each(|spell| {
             spell.style = (style.clone(), spell.style.1);
@@ -158,6 +156,118 @@ impl MonsterType {
             Self::FallenAngel => 5,
             Self::Human => 2,
             Self::Construct => 3,
+        }
+    }
+
+    pub fn hp(&self, difficulty: u32) -> u32 {
+        difficulty * match self {
+            Self::Troll => 20,
+            Self::Bear => 25,
+            Self::Bat => 10,
+            Self::Spider => 10,
+            Self::Snake => 15,
+            Self::Wolf => 15,
+            Self::DireWolf => 20,
+            Self::Hellcat => 20,
+            Self::Demon => 25,
+            Self::Dragon => 30,
+            Self::Ogre => 20,
+            Self::Goblin => 10,
+            Self::Orc => 15,
+            Self::UndeadGoblin => 10,
+            Self::UndeadHuman => 15,
+            Self::UndeadOrc => 15,
+            Self::UndeadTroll => 20,
+            Self::AncientConstruct => 20,
+            Self::Angel => 25,
+            Self::Archon => 30,
+            Self::Templar => 25,
+            Self::Elemental => 20,
+            Self::Guardian => 25,
+            Self::Rat => 10,
+            Self::Slime => 10,
+            Self::Voidling => 15,
+            Self::VoidWalker => 20,
+            Self::VoidSpawn => 20,
+            Self::VoidLord => 30,
+            Self::FallenAngel => 25,
+            Self::Human => 15,
+            Self::Construct => 20,
+        }
+    }
+
+    pub fn as_output(&self) -> u8 {
+        match self {
+            Self::Troll => 0,
+            Self::Bear => 1,
+            Self::Bat => 2,
+            Self::Spider => 3,
+            Self::Snake => 4,
+            Self::Wolf => 5,
+            Self::DireWolf => 6,
+            Self::Hellcat => 7,
+            Self::Demon => 8,
+            Self::Dragon => 9,
+            Self::Ogre => 10,
+            Self::Goblin => 11,
+            Self::Orc => 12,
+            Self::UndeadGoblin => 13,
+            Self::UndeadHuman => 14,
+            Self::UndeadOrc => 15,
+            Self::UndeadTroll => 16,
+            Self::AncientConstruct => 17,
+            Self::Angel => 18,
+            Self::Archon => 19,
+            Self::Templar => 20,
+            Self::Elemental => 21,
+            Self::Guardian => 22,
+            Self::Rat => 23,
+            Self::Slime => 24,
+            Self::Voidling => 25,
+            Self::VoidWalker => 26,
+            Self::VoidSpawn => 27,
+            Self::VoidLord => 28,
+            Self::FallenAngel => 29,
+            Self::Human => 30,
+            Self::Construct => 31,
+        }
+    }
+
+    pub fn from_u8(kind: u8) -> MonsterType {
+        match kind {
+            0 => Self::Troll,
+            1 => Self::Bear,
+            2 => Self::Bat,
+            3 => Self::Spider,
+            4 => Self::Snake,
+            5 => Self::Wolf,
+            6 => Self::DireWolf,
+            7 => Self::Hellcat,
+            8 => Self::Demon,
+            9 => Self::Dragon,
+            10 => Self::Ogre,
+            11 => Self::Goblin,
+            12 => Self::Orc,
+            13 => Self::UndeadGoblin,
+            14 => Self::UndeadHuman,
+            15 => Self::UndeadOrc,
+            16 => Self::UndeadTroll,
+            17 => Self::AncientConstruct,
+            18 => Self::Angel,
+            19 => Self::Archon,
+            20 => Self::Templar,
+            21 => Self::Elemental,
+            22 => Self::Guardian,
+            23 => Self::Rat,
+            24 => Self::Slime,
+            25 => Self::Voidling,
+            26 => Self::VoidWalker,
+            27 => Self::VoidSpawn,
+            28 => Self::VoidLord,
+            29 => Self::FallenAngel,
+            30 => Self::Human,
+            31 => Self::Construct,
+            _ => panic!("Invalid monster type"),
         }
     }
 }
@@ -851,9 +961,99 @@ pub struct Monster {
     pub monster_type: MonsterType,
     pub affinity: Affinity,
     pub acceptance: Acceptance,
-    pub health: u32,
-    pub max_health: u32,
-    pub status: Vec<Status>,
+    pub hp: u32,
+    pub max_hp: u32,
+    pub status: StatusSet,
+}
+
+impl Monster {
+    pub fn new(
+        name: &str,
+        monster_type: &MonsterType,
+        difficulty: u8,
+    ) -> Self {
+        Self {
+            id: None,
+            name: name.to_string(),
+            monster_type: monster_type.clone(),
+            affinity: Affinity::new(),
+            acceptance: Acceptance::new(),
+            hp: monster_type.hp(difficulty as u32),
+            max_hp: monster_type.hp(difficulty as u32),
+            status: StatusSet::new(),
+        }
+    }
+
+    pub fn get_abilities(&self) -> Vec<Spell> {
+        MonsterType::ability_with_style(self.monster_type.clone(), self.acceptance.get_highest())
+    }
+
+    pub fn augment(&self, glyph: &Glyph) -> u16 {
+        self.affinity.val(glyph) as u16
+    }
+
+    pub fn resist(&self, glyph: &Glyph) -> u16 {
+        self.affinity.val(glyph) as u16
+    }
+
+    pub fn as_output(&self, battles: Vec<Index>) -> std::io::Result<Vec<u8>> {
+        use byteorder::{LittleEndian, WriteBytesExt};
+        let name_as_bytes = self.name.as_bytes();
+        let affinity_as_bytes = self.affinity.as_output();
+        let acceptance_as_bytes = self.acceptance.as_output();
+        let status_as_bytes = self.status.as_output()?;
+        let mut output = Vec::with_capacity(
+                std::mem::size_of::<usize>()
+                + name_as_bytes.len()
+                + std::mem::size_of::<u8>()
+                + std::mem::size_of::<u32>()
+                + std::mem::size_of::<u32>()
+                + affinity_as_bytes.len()
+                + acceptance_as_bytes.len()
+                + status_as_bytes.len()
+                + std::mem::size_of::<usize>()
+                + battles.len() * std::mem::size_of::<usize>());
+        output.extend_from_slice(&name_as_bytes.len().to_le_bytes());
+        output.extend(name_as_bytes);
+        output.write_u8(self.monster_type.as_output())?;
+        output.write_u32::<LittleEndian>(self.hp)?;
+        output.write_u32::<LittleEndian>(self.max_hp)?;
+        output.extend(self.affinity.as_output());
+        output.extend(self.acceptance.as_output());
+        output.extend(self.status.as_output()?);
+
+        output.extend_from_slice(&battles.len().to_le_bytes());
+        for battle in battles {
+            output.extend_from_slice(&battle.into_raw_parts().0.to_le_bytes());
+        }
+        Ok(output)
+    }
+
+    pub fn from_buf(input: &[u8]) -> std::io::Result<Self> {
+        use byteorder::{LittleEndian, ReadBytesExt};
+        use std::io::Read;
+        let mut cursor = std::io::Cursor::new(input);
+        let name_len = cursor.read_u8()?;
+        let mut name = vec![0; name_len as usize];
+        cursor.read_exact(&mut name)?;
+        let name = String::from_utf8(name).expect("Invalid utf8");
+        let monster_type = MonsterType::from_u8(cursor.read_u8()?);
+        let hp = cursor.read_u32::<LittleEndian>()?;
+        let max_hp = cursor.read_u32::<LittleEndian>()?;
+        let affinity = Affinity::from_buf(&mut cursor)?;
+        let acceptance = Acceptance::from_buf(&mut cursor)?;
+        let status = StatusSet::from_buf(&mut cursor)?;
+        Ok(Self {
+            id: None,
+            name,
+            monster_type,
+            affinity,
+            acceptance,
+            hp,
+            max_hp,
+            status,
+        })
+    }
 }
 
 impl PartialEq for Monster {

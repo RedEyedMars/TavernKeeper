@@ -221,11 +221,11 @@ dependencies = [
 
 [[package]]
 name = "generational-arena"
-version = "0.1.0"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5da019d3922ddcdd0c69b9dd04d52f9812a4ea0004a83e1e082825e7eb2881d2"
+checksum = "877e94aff08e743b651baaea359664321055749b398adff8740a7399af7796e7"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
 ]
 
 [[package]]
@@ -786,6 +786,7 @@ dependencies = [
 name = "tavern-keeper"
 version = "0.1.0"
 dependencies = [
+ "byteorder",
  "failure",
  "generational-arena",
  "gl",

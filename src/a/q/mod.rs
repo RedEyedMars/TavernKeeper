@@ -1,14 +1,5 @@
-
-
-
-
-
-
-
 use crate::a::e::mon::MonsterType;
 use crate::a::e::wiz::Wizard;
-
-
 
 use super::e::spell::Spell;
 use super::e::spell_book::SpellBook;
@@ -54,4 +45,5 @@ pub struct Quest {
     name: String,
     objectives: Vec<Objective>,
     rewards: Vec<Reward>,
+    is_complete: bool,
 }
