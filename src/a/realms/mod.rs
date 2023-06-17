@@ -2,7 +2,7 @@ pub mod adventures;
 
 use adventures::Adventure;
 
-use super::e::wiz::{Affinity, Acceptance};
+use super::c::e::wiz::{Affinity, Acceptance};
 
 pub enum RealmLocation {
     City {

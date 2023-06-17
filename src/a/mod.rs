@@ -1,22 +1,21 @@
 
 
-pub mod e;
+pub mod c;
 mod input;
 pub mod q;
 pub mod realms;
 
-use crate::a::e::col::Colosseum;
+use crate::a::c::Colosseum;
 use crate::g::render_gl::Viewport;
 use crate::g::resources::Resources;
-use generational_arena::Arena;
 use sdl2::EventPump;
 
 use std::time::Instant;
 use q::battle::Battle;
-use e::wiz::Wizard;
-use e::mon::Monster;
+use c::e::wiz::Wizard;
+use c::e::mon::Monster;
 
-use self::e::mon::MonsterType;
+use self::c::e::mon::MonsterType;
 use self::q::battle::{Tick, BattleEvent};
 
 pub struct GameState {
@@ -60,15 +59,15 @@ pub fn run(event_pump: &mut EventPump, game: &mut GameState) -> Result<bool, fai
 
 impl GameState {
     pub fn execute(&mut self) -> Result<bool, failure::Error> {
+        use c::ColosseumArena;
         if let None = self.battle {
-            use e::col::ColosseumArena;
             let wiz_id = self.col.insert(Wizard::new("Bob".to_string()));
             let wiz: &mut Wizard = self.col.get_mut(wiz_id);
-            wiz.add_spell_to_book(e::spell::spells::fire::FIREBALL.clone());
+            wiz.add_spell_to_book(c::e::spell::spells::fire::FIREBALL.clone());
             
             let wiz_id = self.col.insert(Wizard::new("Rob".to_string()));
             let wiz: &mut Wizard = self.col.get_mut(wiz_id);
-            wiz.add_spell_to_book(e::spell::spells::air::LIGHTNING.clone());
+            wiz.add_spell_to_book(c::e::spell::spells::air::LIGHTNING.clone());
 
             let mon_id = self.col.insert(Monster::new("Tod", &MonsterType::Goblin, 1));
             let mon_id2 = self.col.insert(Monster::new("Sod", &MonsterType::Goblin, 1));
@@ -78,6 +77,7 @@ impl GameState {
         }
         self.tick = self.battle.as_mut().unwrap().tick(&mut self.tick, &mut self.col);
         if self.tick.iter().any(|event| event == &BattleEvent::Victory || event == &BattleEvent::Defeat) {
+            self.col.insert(self.battle.clone().unwrap());
             self.col.save().unwrap();
             return Ok(false);
         }

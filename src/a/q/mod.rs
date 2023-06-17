@@ -1,9 +1,9 @@
-use crate::a::e::mon::MonsterType;
-use crate::a::e::wiz::Wizard;
+use super::c::e::mon::MonsterType;
+use super::c::e::wiz::Wizard;
 
-use super::e::spell::Spell;
-use super::e::spell_book::SpellBook;
-use super::e::Glyph;
+use super::c::e::spell::Spell;
+use super::c::e::spell_book::SpellBook;
+use super::c::e::Glyph;
 
 use items::Item;
 

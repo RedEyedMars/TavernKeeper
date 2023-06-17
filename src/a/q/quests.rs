@@ -4,13 +4,13 @@ use rand::Rng;
 use super::battle::Battle;
 use super::items::{amulets, books, misc, potions, rings, scrolls, tools};
 use super::{ItemType, Objective, Quest, Reward};
-use crate::a::e::col::Colosseum;
-use crate::a::e::mon::{Monster, MonsterType};
-use crate::a::e::party::Party;
-use crate::a::e::spell::{Spell, spells};
-use crate::a::e::spell_book::SpellBook;
-use crate::a::e::wiz::{Acceptance, Wizard};
-use crate::a::e::{Glyph, Style};
+use crate::a::c::Colosseum;
+use crate::a::c::e::mon::{Monster, MonsterType};
+use crate::a::c::e::party::Party;
+use crate::a::c::e::spell::{Spell, spells};
+use crate::a::c::e::spell_book::SpellBook;
+use crate::a::c::e::wiz::{Acceptance, Wizard};
+use crate::a::c::e::{Glyph, Style};
 
 impl Quest {
     pub fn is_complete(&self) -> bool {
@@ -35,13 +35,13 @@ impl Quest {
     }
 
     pub fn monsters(&self, col: &mut Colosseum) -> Vec<Index> {
-        use crate::a::e::col::ColosseumArena;
+        use crate::a::c::ColosseumArena;
         let mut monsters = Vec::new();
         for objective in &self.objectives {
             match objective {
                 Objective::Kill { kind, count } => {
                     for _ in 0..*count {
-                        let mon_id = col.insert(Monster::new(Synonym::for_first_name(), kind, 1));
+                        let mon_id = col.insert(Monster::new(synonym::for_first_name(), kind, 1));
                         monsters.push(mon_id);
                     }
                 }
@@ -93,10 +93,10 @@ impl Quest {
     }
 
     pub fn generate_name() -> String {
-        Synonym::for_quest()
-            + Synonym::for_of_the()
-            + Synonym::for_adjective()
-            + Synonym::for_noun()
+        synonym::for_quest()
+            + synonym::for_of_the()
+            + synonym::for_adjective()
+            + synonym::for_noun()
     }
 
     fn generate_objectives(acceptance: &Acceptance) -> Vec<Objective> {
@@ -131,7 +131,7 @@ impl Quest {
 
     fn generate_monster_type() -> MonsterType {
         let mut rng = rand::thread_rng();
-        crate::a::e::mon::ALL[rng.gen_range(0, crate::a::e::mon::ALL.len())].clone()
+        crate::a::c::e::mon::ALL[rng.gen_range(0, crate::a::c::e::mon::ALL.len())].clone()
     }
 
     fn generate_item(_acceptance: &Acceptance) -> ItemType {
@@ -160,12 +160,12 @@ impl Quest {
         let mut name = String::new();
         let count = rng.gen_range(1, 3);
         for _ in 0..count {
-            name.push_str(Synonym::for_first_name());
+            name.push_str(synonym::for_first_name());
             name.push_str(" ");
         }
-        name.push_str(Synonym::for_last_name());
+        name.push_str(synonym::for_last_name());
         name.push_str(" ");
-        name.push_str(Synonym::for_adjective());
+        name.push_str(synonym::for_adjective());
         name
     }
 
@@ -251,7 +251,7 @@ impl Quest {
     }
 }
 
-pub mod Synonym {
+pub mod synonym {
     use rand::Rng;
     pub fn for_quest() -> String {
         let mut rng = rand::thread_rng();
